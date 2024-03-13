@@ -1,0 +1,4 @@
+exclude Dockerfile
+exclude Dockerfile - old
+exclude *.ipynb
+exclude *.txt

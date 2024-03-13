@@ -1,3 +1,4 @@
+# Based on https://github.com/eWaterCycle/leakybucket-bmi/blob/main/Dockerfile
 # Base container for a BMI model written in Python
 #
 # Activates a default conda base environment with micromamba. While it may not
@@ -11,7 +12,7 @@
 #
 # To build the image, run
 #
-#   docker build --tag leakybucket-grpc4bmi:v0.0.1 .
+#   docker build --tag hbv-np-grpc4bmi:v0.0.1 . 
 #
 # If you use podman, you may need to add `--format docker`
 #
@@ -29,25 +30,30 @@
 # This will spawn a new bash terminal running inside the docker container
 
 FROM mambaorg/micromamba:1.3.1
+MAINTAINER David Haasnoot daafips@gmail.com
 
 # Here you can point to the source repository of this Dockerfile:
-LABEL org.opencontainers.image.source="https://github.com/eWaterCycle/leakybucket-bmi"
+LABEL org.opencontainers.image.source="https://github.com/Daafip/Lorenz-bmi"
 
 # Install Python + additional conda-dependencies,
 # Here I added cartopy as an example
-RUN micromamba install -y -n base -c conda-forge python=3.10 cartopy && \
+RUN micromamba install -y -n base -c conda-forge python=3.10 cartopy git && \
     micromamba clean --all --yes
 
 # Make sure the conda environment is activated for the remaining build
 # instructions below
 ARG MAMBA_DOCKERFILE_ACTIVATE=1  # (otherwise python will not be found)
 
-# Install leakybucket.LeakyBucketBmi
-COPY . /opt/leakybucket
-RUN pip install /opt/leakybucket/
+# Install HBV.HBV_bmi
+COPY . /opt/lorenz
+RUN pip install /opt/lorenz/
 
 RUN pip install grpc4bmi==0.4.0
 
+
+
 # Default command should be to run GRPC4BMI server
 # Don't override micromamba's entrypoint as that activates conda!
-CMD run-bmi-server --name "leakybucket.LeakyBucketBmi" --port 55555 --debug
+# CMD run-bmi-server --name "lorenz.lorenz_bmi.HBV" --port 55555 --debug
+
+CMD run-bmi-server --name "lorenz.lorenz_bmi.Lorenz" --port 55555 --debug
