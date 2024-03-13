@@ -14,8 +14,6 @@ Feel free to fork/duplicate this repo and publish your own (better) version.
 ## separate use
 Can also be used as a standalone package _in theory_ - not advised
 
-```
-
 Be aware of the non-intuitive [BMI](https://github.com/eWaterCycle/grpc4bmi) implementation as this package is designed to run in a [docker](https://github.com/Daafip/lorenz-bmi/pkgs/container/lorenz-bmi-grpc4bmi) container. 
 
 
