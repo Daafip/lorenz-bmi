@@ -1,6 +1,7 @@
 from bmipy import Bmi
 import numpy as np
-import yaml
+from lorenz import utils
+from typing import Any, Tuple
 
 def rk4(state, dt, F):
     k1 = f(state,F)
@@ -46,22 +47,20 @@ class Lorenz(Bmi):
         self._spacing = (0., 0.)
         self._origin = (0., 0.)
 
-    def initialize(self, settingsFile):
+    def initialize(self, config_file):
 
-        # Read settings YAML file
-        with open(settingsFile, 'r') as stream:
-            # settings = yaml.safe_load(stream) # generates an error
-            settings = yaml.load(stream, Loader=yaml.Loader)  # solves the issue
+        settings: dict[str, Any] = utils.read_config(config_file)
 
         self._dt = settings['dt']
         self._t = 0.
-        self._startTime = settings['startTime']
-        self._endTime = settings['endTime']
+        self._startTime = settings['start_time']
+        self._endTime = settings['end_time']
+
 
         self._J = settings['J']
         self._F = settings['F']
 
-        self._state = settings['startState']
+        self._state = np.array(settings['start_state'])
 
         self._value['state'] = "_state"
 

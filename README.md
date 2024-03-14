@@ -1,6 +1,7 @@
 # Lorenz-BMI
 
 <!-- [![PyPI](https://img.shields.io/pypi/v/HBV)](https://pypi.org/project/HBV/) -->
+[![github license badge](https://img.shields.io/github/license/Daafip/lorenz-bmi)](https://github.com/Daafip/lorenz-bmi)
 
 Basic Model Interface (BMI) Lorenz model intended for use with [eWaterCycle](https://github.com/eWaterCycle). See said repo for installation instructions. 
 
@@ -20,4 +21,6 @@ Be aware of the non-intuitive [BMI](https://github.com/eWaterCycle/grpc4bmi) imp
 ## Changelog
 
 ### v0.0.1
-adding model
+- adding model
+### v0.0.2
+- change names to be pythonic: start_time instead of startTime etc. 
