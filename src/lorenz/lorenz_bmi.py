@@ -3,24 +3,25 @@ import numpy as np
 from lorenz import utils
 from typing import Any, Tuple
 
+
 def rk4(state, dt, F):
-    k1 = f(state,F)
-    k2 = f(state + 0.5 * dt * k1,F)
-    k3 = f(state + 0.5 * dt * k2,F)
+    k1 = f(state, F)
+    k2 = f(state + 0.5 * dt * k1, F)
+    k3 = f(state + 0.5 * dt * k2, F)
     k4 = f(state + dt * k3, F)
-    return (1/6) * dt * (k1 + 2 * k2 + 2 * k3 + k4)
+    return (1 / 6) * dt * (k1 + 2 * k2 + 2 * k3 + k4)
 
 
-def f(state,F):
+def f(state, F):
     J = len(state)
     k = np.zeros(J)
 
-    k[0] = (state[1]-state[J-2]) * state[J-1] - state[0]
-    k[1] = (state[2] - state[J-1])*state[0] - state[1]
-    k[J-1] = (state[0] - state[J-3])*state[J-2] - state[J-1]
+    k[0] = (state[1] - state[J - 2]) * state[J - 1] - state[0]
+    k[1] = (state[2] - state[J - 1]) * state[0] - state[1]
+    k[J - 1] = (state[0] - state[J - 3]) * state[J - 2] - state[J - 1]
 
-    for j in range(2,J-1):
-        k[j] =(state[j+1] - state[j-2])*state[j-1] - state[j]
+    for j in range(2, J - 1):
+        k[j] = (state[j + 1] - state[j - 2]) * state[j - 1] - state[j]
 
     return k + F
 
@@ -56,7 +57,6 @@ class Lorenz(Bmi):
         self._startTime = settings['start_time']
         self._endTime = settings['end_time']
 
-
         self._J = settings['J']
         self._F = settings['F']
 
@@ -87,27 +87,29 @@ class Lorenz(Bmi):
 
         self._state = None
 
-    def get_var_type(self, long_var_name):
-        return str(self.get_value(long_var_name).dtype)
+    def get_var_type(self, var_name):
+        return str(self.get_value_at_indices(var_name, np.array([0]), 5)[0].dtype)
 
-    def get_var_units(self, long_var_name):
-        return self._var_units[long_var_name]
+    def get_var_units(self, var_name):
+        return self._var_units[var_name]
 
-    def get_var_rank(self, long_var_name):
-        return self.get_value(long_var_name).ndim
+    def get_var_rank(self, var_name):
+        return self.get_value(var_name, np.zeros(self._J)).ndim
 
-    def get_value(self, long_var_name, **kwargs):
-        return getattr(self, self._value[long_var_name])
+    def get_value(self, var_name, dest):
+        dest[:] = getattr(self, self._value[var_name])
+        return dest
 
-    def get_value_at_indices(self, long_var_name, indices, **kwargs):
-        return self.get_value(long_var_name)[indices]
+    def get_value_at_indices(self, var_name: str, dest: np.ndarray, indices: int) -> np.ndarray:
+        dest[:] = getattr(self, self._value[var_name])[indices]
+        return dest
 
-    def set_value(self, long_var_name, src):
-        val = self.get_value(long_var_name)
+    def set_value(self, var_name, src):
+        val = getattr(self, self._value[var_name])
         val[:] = src
 
-    def set_value_at_indices(self, long_var_name, indices, src):
-        val = self.get_value(long_var_name)
+    def set_value_at_indices(self, var_name, indices, src):
+        val = getattr(self, self._value[var_name])
         val[indices] = src
 
     def get_component_name(self):
@@ -119,20 +121,25 @@ class Lorenz(Bmi):
     def get_output_var_names(self):
         return self._output_var_names
 
-    def get_grid_shape(self, long_var_name, **kwargs):
-        return self.get_value(long_var_name).shape
+    def get_grid_shape(self, grid_id, shape):
+        """Number of rows and columns of uniform rectilinear grid."""
+        return self._shape
 
-    def get_grid_spacing(self, long_var_name, **kwargs):
-        return self._spacing
+    def get_grid_spacing(self, grid_id, spacing):
+        spacing[:] = self._spacing
+        return spacing
 
-    def get_grid_origin(self, long_var_name, **kwargs):
-        return self._origin
+    def get_grid_origin(self, grid_id, origin):
+        """Origin of uniform rectilinear grid."""
+        origin[:] = self._origin
+        return origin
 
-    def get_grid_type(self, long_var_name):
-        if long_var_name in self._value:
+    def get_grid_type(self, var_name):
+        if var_name in self._value:
             return "rectilinear"
         else:
             return None
+
     def get_var_itemsize(self, name: str) -> int:
         return np.array(0.0).nbytes
 
@@ -142,10 +149,12 @@ class Lorenz(Bmi):
     # Grid information
     def get_var_grid(self, name: str) -> int:
         raise 0
+
     def get_grid_rank(self, grid: int) -> int:
-        return 2
+        return len(self._shape)
+
     def get_grid_size(self, grid: int) -> int:
-        return 1
+        return int(np.prod(self._shape))
 
     def get_start_time(self):
         return self._startTime
@@ -203,10 +212,10 @@ class Lorenz(Bmi):
         raise NotImplementedError()
 
     def get_grid_nodes_per_face(
-        self, grid: int, nodes_per_face: np.ndarray) -> np.ndarray:
+            self, grid: int, nodes_per_face: np.ndarray) -> np.ndarray:
         raise NotImplementedError()
 
 
 def get_unixtime(Ts: np.datetime64) -> int:
     """Get unix timestamp (seconds since 1 january 1970) from a np.datetime64."""
-    return  np.datetime64(Ts).astype("datetime64[s]").astype("int")
+    return np.datetime64(Ts).astype("datetime64[s]").astype("int")
