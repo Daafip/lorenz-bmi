@@ -1,0 +1,23 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "lorenz"
+description = "Dev version for a lorenz model using BMI for eWaterCycle."
+readme = "README.md"
+license = "Apache-2.0"
+version = "0.0.1"
+authors = [
+  { name = "David Haasnoot", email = "davidhaasnoot@gmail.com" },
+]
+
+# Include here only the dependencies for the BMI Model
+# This is used to run the BmiModel inside the container
+dependencies = [
+  "bmipy",
+  "numpy",
+  "xarray",
+  "netcdf4",
+  "pandas",
+]

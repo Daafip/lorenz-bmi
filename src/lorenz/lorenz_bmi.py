@@ -134,6 +134,19 @@ class Lorenz(Bmi):
             return "rectilinear"
         else:
             return None
+    def get_var_itemsize(self, name: str) -> int:
+        return np.array(0.0).nbytes
+
+    def get_var_nbytes(self, name: str) -> int:
+        return np.array(0.0).nbytes
+
+    # Grid information
+    def get_var_grid(self, name: str) -> int:
+        raise 0
+    def get_grid_rank(self, grid: int) -> int:
+        return 2
+    def get_grid_size(self, grid: int) -> int:
+        return 1
 
     def get_start_time(self):
         return self._startTime
@@ -151,6 +164,11 @@ class Lorenz(Bmi):
         return self._dt
 
     # not implemented & not planning to
+    def get_grid_x(self, grid: int, x: np.ndarray) -> np.ndarray:
+        raise NotImplementedError()
+
+    def get_grid_y(self, grid: int, y: np.ndarray) -> np.ndarray:
+        raise NotImplementedError()
 
     def get_input_item_count(self) -> int:
         raise NotImplementedError()
