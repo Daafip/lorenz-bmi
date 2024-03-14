@@ -88,7 +88,7 @@ class Lorenz(Bmi):
         self._state = None
 
     def get_var_type(self, var_name):
-        return str(self.get_value_at_indices(var_name, np.array([0]), 5)[0].dtype)
+        return str(self.get_value_at_indices(var_name, np.array([0]), 0)[0].dtype)
 
     def get_var_units(self, var_name):
         return self._var_units[var_name]
