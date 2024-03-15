@@ -88,7 +88,7 @@ class Lorenz(Bmi):
         self._state = None
 
     def get_var_type(self, var_name):
-        return str(self.get_value_at_indices(var_name, np.array([0]), 0)[0].dtype)
+        return str( getattr(self, self.get_value_ptr(var_name)).dtype)
 
     def get_var_units(self, var_name):
         return self._var_units[var_name]
@@ -140,15 +140,15 @@ class Lorenz(Bmi):
         else:
             return None
 
-    def get_var_itemsize(self, name: str) -> int:
-        return np.array(0.0).nbytes
+    def get_var_itemsize(self, var_name: str) -> int:
+        return getattr(self, self.get_value_ptr(var_name)).itemsize
 
-    def get_var_nbytes(self, name: str) -> int:
-        return np.array(0.0).nbytes
+    def get_var_nbytes(self, var_name: str) -> int:
+        return getattr(self, self.get_value_ptr(var_name)).nbytes
 
     # Grid information
     def get_var_grid(self, name: str) -> int:
-        raise 0
+        return 0
 
     def get_grid_rank(self, grid: int) -> int:
         return len(self._shape)
@@ -214,6 +214,21 @@ class Lorenz(Bmi):
     def get_grid_nodes_per_face(
             self, grid: int, nodes_per_face: np.ndarray) -> np.ndarray:
         raise NotImplementedError()
+
+    def get_value_ptr(self, var_name):
+        """Reference to values.
+
+        Parameters
+        ----------
+        var_name : str
+            Name of variable as CSDMS Standard Name.
+
+        Returns
+        -------
+        array_like
+            Value array.
+        """
+        return self._value[var_name]
 
 
 def get_unixtime(Ts: np.datetime64) -> int:

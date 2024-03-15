@@ -24,3 +24,5 @@ Be aware of the non-intuitive [BMI](https://github.com/eWaterCycle/grpc4bmi) imp
 - adding model
 ### v0.0.2
 - change names to be pythonic: start_time instead of startTime etc. 
+### v0.0.3-0.0.7 
+- changes to match grpc4bmi

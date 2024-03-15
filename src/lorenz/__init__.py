@@ -1,4 +1,4 @@
-__version__ = "0.0.2"
+__version__ = "0.0.7"
 
 ## 1.3 = remove EP and see if that works
 
