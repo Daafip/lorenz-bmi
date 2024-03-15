@@ -2,6 +2,8 @@ from bmipy import Bmi
 import numpy as np
 from lorenz import utils
 from typing import Any, Tuple
+from dateutil.parser import parse
+import pandas as pd
 
 
 def rk4(state, dt, F):
@@ -39,6 +41,8 @@ class Lorenz(Bmi):
         self._t = 0.
         self._startTime = 0.
         self._endTime = 0.
+        self.start_time = np.datetime64("1970-01-01T00:00:00")
+        self.end_time = np.datetime64("1970-01-01T00:00:00")
 
         self._state = None
 
@@ -48,14 +52,25 @@ class Lorenz(Bmi):
         self._spacing = (0., 0.)
         self._origin = (0., 0.)
 
+        self._J = 0
+        self._F = 0
+
+        self._settings = {}
+
     def initialize(self, config_file):
 
         settings: dict[str, Any] = utils.read_config(config_file)
+        self._settings = settings
 
         self._dt = settings['dt']
         self._t = 0.
-        self._startTime = settings['start_time']
-        self._endTime = settings['end_time']
+
+        time_delta = parse(settings['end_time']) - parse(settings['start_time'])
+        self._startTime = 0 # whole days
+        self._endTime = time_delta.days + time_delta.seconds / (3600 * 24)
+
+        self.start_time = pd.Timestamp(parse(settings['start_time'])).to_datetime64() # equivalent np.dt64
+        self.end_time = pd.Timestamp(parse(settings['end_time'])).to_datetime64()
 
         self._J = settings['J']
         self._F = settings['F']
@@ -157,34 +172,36 @@ class Lorenz(Bmi):
         return int(np.prod(self._shape))
 
     def get_start_time(self):
-        return self._startTime
+        return get_unixtime(self.end_time)
 
     def get_end_time(self):
-        return self._endTime
+        return get_unixtime(self.end_time)
 
     def get_current_time(self):
-        return self._t
+        """"Weird switching but should now return in seconds since 1970"""
+        current = self.start_time + np.timedelta64(int(self._t * 24 * 3600 * 1000), "ms")
+        return get_unixtime(current)
 
     def get_time_units(self):
-        return "dimensionless time"
+        return "seconds since 1970-01-01 00:00:00.0 +0000"
 
     def get_time_step(self):
-        return self._dt
+        """Model is in days so return seconds dt"""
+        return self._dt * 24 * 3600
 
     # not implemented & not planning to
     def get_grid_x(self, grid: int, x: np.ndarray) -> np.ndarray:
-        raise NotImplementedError()
+        x[:] = np.arange(self._origin[0], self._shape[0], self._spacing[0])
+        return x
 
     def get_grid_y(self, grid: int, y: np.ndarray) -> np.ndarray:
-        raise NotImplementedError()
+        y[:] = np.arange(self._origin[1], self._shape[1], self._spacing[1])
+        return y
 
     def get_input_item_count(self) -> int:
         raise NotImplementedError()
 
     def get_output_item_count(self) -> int:
-        raise NotImplementedError()
-
-    def get_value_ptr(self, name: str) -> np.ndarray:
         raise NotImplementedError()
 
     def get_var_location(self, name: str) -> str:
@@ -231,6 +248,6 @@ class Lorenz(Bmi):
         return self._value[var_name]
 
 
-def get_unixtime(Ts: np.datetime64) -> int:
+def get_unixtime(dt64: np.datetime64) -> float:
     """Get unix timestamp (seconds since 1 january 1970) from a np.datetime64."""
-    return np.datetime64(Ts).astype("datetime64[s]").astype("int")
+    return dt64.astype("datetime64[s]").astype("int")

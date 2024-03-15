@@ -26,3 +26,5 @@ Be aware of the non-intuitive [BMI](https://github.com/eWaterCycle/grpc4bmi) imp
 - change names to be pythonic: start_time instead of startTime etc. 
 ### v0.0.3-0.0.7 
 - changes to match grpc4bmi
+### v0.0.8
+- change grid and time to match ewatercycle expected format

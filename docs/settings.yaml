@@ -1,8 +1,8 @@
 {
     "J": 40,
     "F": 8.0,
-    "start_time": 0.0,
-    "end_time": 20.0,
+    "start_time": "1997-08-01T00:00:00Z",
+    "end_time": "1997-08-20T00:00:00Z",
     "dt": 0.001,
     "start_state": [
         0.0,
