@@ -7,7 +7,7 @@ name = "lorenz"
 description = "Dev version for a lorenz model using BMI for eWaterCycle."
 readme = "README.md"
 license = "Apache-2.0"
-version = "0.0.8"
+version = "0.0.9"
 authors = [
   { name = "David Haasnoot", email = "davidhaasnoot@gmail.com" },
 ]

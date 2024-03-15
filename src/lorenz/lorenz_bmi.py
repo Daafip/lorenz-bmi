@@ -66,10 +66,12 @@ class Lorenz(Bmi):
         self._t = 0.
 
         time_delta = parse(settings['end_time']) - parse(settings['start_time'])
-        self._startTime = 0 # whole days
+        # whole days
+        self._startTime = 0
         self._endTime = time_delta.days + time_delta.seconds / (3600 * 24)
 
-        self.start_time = pd.Timestamp(parse(settings['start_time'])).to_datetime64() # equivalent np.dt64
+        # equivalent np.dt64
+        self.start_time = pd.Timestamp(parse(settings['start_time'])).to_datetime64()
         self.end_time = pd.Timestamp(parse(settings['end_time'])).to_datetime64()
 
         self._J = settings['J']
@@ -172,7 +174,7 @@ class Lorenz(Bmi):
         return int(np.prod(self._shape))
 
     def get_start_time(self):
-        return get_unixtime(self.end_time)
+        return get_unixtime(self.start_time)
 
     def get_end_time(self):
         return get_unixtime(self.end_time)
