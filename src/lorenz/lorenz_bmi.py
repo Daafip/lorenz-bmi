@@ -31,7 +31,10 @@ def f(state, F):
 class Lorenz(Bmi):
     """Lorenz model wrapped in a BMI interface."""
 
-    _var_units = {'state': '[-]'}
+    _var_units = {'state': '[-]',
+                  "latitude": 'm',
+                  "longitude":"m",
+                   }
     _name = 'Example Python Lorenz model, BMI'
     _input_var_names = ['state']
     _output_var_names = ['state']
@@ -193,11 +196,11 @@ class Lorenz(Bmi):
 
     # not implemented & not planning to
     def get_grid_x(self, grid: int, x: np.ndarray) -> np.ndarray:
-        x[:] = np.arange(self._origin[0], self._shape[0], self._spacing[0])
+        x[:] = np.arange(self._origin[1], self._shape[1], self._spacing[1])
         return x
 
     def get_grid_y(self, grid: int, y: np.ndarray) -> np.ndarray:
-        y[:] = np.arange(self._origin[1], self._shape[1], self._spacing[1])
+        y[:] = np.arange(self._origin[0], self._shape[0], self._spacing[0])
         return y
 
     def get_input_item_count(self) -> int:
